@@ -11,27 +11,20 @@ theme:
   language: es
   icon:
     logo: material/hexagon-multiple
+  # Dark arcade look only, like the web app (colours in docs/stylesheets/arcade.css).
   palette:
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: red
-      accent: blue
-      toggle:
-        icon: material/weather-night
-        name: Modo oscuro
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: red
-      accent: blue
-      toggle:
-        icon: material/weather-sunny
-        name: Modo claro
+    scheme: slate
+    primary: custom
+    accent: custom
   features:
     - navigation.sections
     - navigation.top
     - navigation.footer
     - content.code.copy
     - search.highlight
+
+extra_css:
+  - stylesheets/arcade.css
 
 nav:
   - Inicio: index.md

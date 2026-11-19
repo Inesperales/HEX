@@ -1,0 +1,142 @@
+/* Arcade / neon look for the documentation, matching the web app
+   (same palette and fonts as app/theme.py and .streamlit/config.toml).
+   Pixel font only for headings and labels; body text stays in VT323 at a
+   larger size and code in a normal monospace font, so long pages stay readable. */
+
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap");
+
+:root,
+[data-md-color-scheme="slate"] {
+  --arcade-bg: #140B2E;
+  --arcade-panel: #1D1142;
+  --arcade-panel-2: #2B1B52;
+  --arcade-border: #6B4FD1;
+  --arcade-text: #F3EEFF;
+  --arcade-muted: #B9A8F0;
+  --arcade-yellow: #FFE14D;
+  --arcade-red: #FF4D4D;
+  --arcade-blue: #4DA3FF;
+  --arcade-pixel: "Press Start 2P", monospace;
+  --arcade-terminal: "VT323", monospace;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-hue: 255;
+  --md-default-bg-color: var(--arcade-bg);
+  --md-default-fg-color: var(--arcade-text);
+  --md-default-fg-color--light: var(--arcade-muted);
+  --md-default-fg-color--lighter: var(--arcade-border);
+  --md-primary-fg-color: var(--arcade-panel);
+  --md-primary-bg-color: var(--arcade-text);
+  --md-accent-fg-color: var(--arcade-yellow);
+  --md-typeset-color: var(--arcade-text);
+  --md-typeset-a-color: var(--arcade-yellow);
+  --md-code-bg-color: #0D0720;
+  --md-code-fg-color: var(--arcade-text);
+  --md-footer-bg-color: var(--arcade-panel);
+  --md-footer-bg-color--dark: var(--arcade-bg);
+  --md-typeset-table-color: var(--arcade-border);
+}
+
+/* ---------- page: very subtle scanlines, like the app ---------- */
+body {
+  background-color: var(--arcade-bg);
+  background-image: repeating-linear-gradient(
+    0deg, rgba(255,255,255,.03) 0px, rgba(255,255,255,.03) 1px, transparent 1px, transparent 4px);
+}
+.md-main, .md-container { background: transparent; }
+
+/* ---------- body text: terminal font, a bit larger ---------- */
+.md-typeset {
+  font-family: var(--arcade-terminal);
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+.md-typeset code, .md-typeset pre, .md-typeset kbd {
+  font-family: "Roboto Mono", ui-monospace, Consolas, monospace;
+  font-size: 0.72rem;
+}
+.md-nav, .md-search__input, .md-footer, .md-source {
+  font-family: var(--arcade-terminal);
+  font-size: 0.95rem;
+}
+
+/* ---------- header and tabs: flat panel with a thick border ---------- */
+.md-header {
+  background-color: var(--arcade-panel);
+  border-bottom: 4px solid var(--arcade-border);
+  box-shadow: none;
+}
+.md-header__topic, .md-header__title {
+  font-family: var(--arcade-pixel);
+  font-size: 0.6rem;
+  color: var(--arcade-yellow);
+}
+
+/* ---------- headings ---------- */
+.md-typeset h1, .md-typeset h2, .md-typeset h3 {
+  font-family: var(--arcade-pixel);
+  font-weight: normal;
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+.md-typeset h1 {
+  font-size: 1.1rem;
+  color: var(--arcade-yellow);
+  text-shadow: 3px 3px 0 var(--arcade-red);
+}
+.md-typeset h2 {
+  font-size: 0.8rem;
+  color: var(--arcade-yellow);
+  padding-bottom: 0.4rem;
+  border-bottom: 4px solid var(--arcade-border);
+}
+.md-typeset h3 {
+  font-size: 0.62rem;
+  color: var(--arcade-blue);
+}
+.md-typeset strong { color: var(--arcade-yellow); font-weight: normal; }
+.md-typeset hr { border-bottom: 4px dashed var(--arcade-border); }
+
+/* ---------- panels: tables, code blocks, admonitions, tabs ---------- */
+.md-typeset table:not([class]),
+.md-typeset pre > code,
+.md-typeset .admonition, .md-typeset details,
+.md-typeset .tabbed-set {
+  border: 4px solid var(--arcade-border);
+  border-radius: 0;
+  box-shadow: 6px 6px 0 #000;
+}
+.md-typeset table:not([class]) {
+  background-color: var(--arcade-panel);
+  font-size: 0.95rem;
+}
+.md-typeset table:not([class]) th {
+  background-color: var(--arcade-panel-2);
+  color: var(--arcade-yellow);
+  font-family: var(--arcade-pixel);
+  font-size: 0.5rem;
+  font-weight: normal;
+}
+.md-typeset table:not([class]) td { border-top: 2px solid var(--arcade-border); }
+.md-typeset .highlight .filename {
+  font-family: var(--arcade-pixel);
+  font-size: 0.5rem;
+  background-color: var(--arcade-panel-2);
+  border: 4px solid var(--arcade-border);
+  border-bottom: none;
+  border-radius: 0;
+}
+.md-typeset .tabbed-labels > label {
+  font-family: var(--arcade-pixel);
+  font-size: 0.5rem;
+}
+.md-typeset .tabbed-set > pre > code, .md-typeset .tabbed-content pre > code { box-shadow: none; }
+
+/* ---------- wider content, so code blocks fit; names in tables never split ---------- */
+.md-grid { max-width: 1440px; }
+.md-typeset table:not([class]) code { white-space: nowrap; }
+
+/* ---------- links ---------- */
+.md-typeset a:hover { color: var(--arcade-red); }
+.md-nav__link--active, .md-nav__link:hover { color: var(--arcade-yellow) !important; }

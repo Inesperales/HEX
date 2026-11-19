@@ -213,7 +213,7 @@ def game_area() -> None:
 
     render_status(match)
     # 256-colour PNG: ~50 KB per move. The board fills the panel (at most
-    # 1000 px wide, see theme.py) and shrinks on narrow screens.
+    # 820 px wide, see theme.py) and shrinks on narrow screens.
     with st.container(key=BOARD_PANEL_KEY):
         streamlit_image_coordinates(
             draw_board_for_web(match.state, match.last_move, match.size),

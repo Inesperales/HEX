@@ -13,7 +13,7 @@ borderColor = "#6B4FD1"
 showWidgetBorder = true
 baseRadius = "none"
 buttonRadius = "none"
-baseFontSize = 22
+baseFontSize = 19
 font = "VT323:https://fonts.googleapis.com/css2?family=VT323&display=swap, monospace"
 headingFont = "Press Start 2P:https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap, monospace"
 

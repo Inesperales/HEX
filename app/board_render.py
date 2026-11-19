@@ -33,7 +33,7 @@ SQRT3 = math.sqrt(3)
 SUPERSAMPLE = 2
 """Shapes are drawn at this scale and then reduced, for smooth edges."""
 
-TARGET_WIDTH = 1000
+TARGET_WIDTH = 820
 """Width of the board image in pixels (the app shows it at most this wide)."""
 
 REFERENCE_RADIUS = 50.0

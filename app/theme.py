@@ -22,7 +22,7 @@ PIXEL_FONT = "'Press Start 2P', monospace"
 TERMINAL_FONT = "'VT323', monospace"
 
 BOARD_PANEL_KEY = "board-panel"
-"""``key`` of the container around the board (styled as a panel, max 1000 px)."""
+"""``key`` of the container around the board (styled as a panel, max 820 px)."""
 
 CSS = f"""
 <style>
@@ -33,8 +33,8 @@ CSS = f"""
     0deg, rgba(255,255,255,.03) 0px, rgba(255,255,255,.03) 1px, transparent 1px, transparent 4px);
 }}
 [data-testid="stHeader"] {{ background: transparent; }}
-/* The 22 px base font also enlarges Streamlit's rem-based side padding:
-   keep it in pixels so the board can be ~1000 px wide on a laptop. */
+/* The large base font also enlarges Streamlit's rem-based side padding:
+   keep it in pixels so the board can be ~820 px wide on a laptop. */
 [data-testid="stMainBlockContainer"] {{
   padding-left: 32px !important;
   padding-right: 32px !important;
@@ -82,9 +82,9 @@ button p {{
 }}
 [data-testid="stAlertContainer"] p {{ color: {TEXT} !important; }}
 
-/* ---------- board: as wide as the column, at most 1000 px, centred ---------- */
+/* ---------- board: as wide as the column, at most 820 px, centred ---------- */
 .st-key-{BOARD_PANEL_KEY} {{
-  max-width: 1000px;
+  max-width: 820px;
   margin: 0 auto 8px auto;
   padding: 0;
 }}

@@ -88,11 +88,11 @@ def test_neighbor_centers_match_game_neighbors() -> None:
 
 
 def test_board_is_about_target_width_for_every_size() -> None:
-    """Every board size 5-11 is drawn ~1000 px wide (it scales, it does not shrink)."""
+    """Every board size 5-11 is drawn ~820 px wide (it scales, it does not shrink)."""
     for size in range(5, 12):
         width, height = geometry(size).image_size
         assert TARGET_WIDTH - 2 <= width <= TARGET_WIDTH + 2
-        assert 550 <= height <= 750
+        assert 450 <= height <= 615
 
 
 # --------------------------------------------------------------------------- drawing
