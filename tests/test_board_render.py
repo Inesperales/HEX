@@ -12,10 +12,15 @@ pytest.importorskip("PIL")
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "app"))
 
 from board_render import (  # noqa: E402
+    BLUE_EDGE,
     BLUE_FILL,
     EMPTY_FILL,
+    HIGHLIGHT,
+    RED_EDGE,
     RED_FILL,
+    TARGET_WIDTH,
     draw_board,
+    draw_board_for_web,
     geometry,
     pixel_to_cell,
     winning_chain,
@@ -82,10 +87,12 @@ def test_neighbor_centers_match_game_neighbors() -> None:
             assert close_cells == set(neighbors((r, c), size))
 
 
-def test_board_fits_in_target_width() -> None:
+def test_board_is_about_target_width_for_every_size() -> None:
+    """Every board size 5-11 is drawn ~1000 px wide (it scales, it does not shrink)."""
     for size in range(5, 12):
-        width, _ = geometry(size).image_size
-        assert 300 <= width <= 760
+        width, height = geometry(size).image_size
+        assert TARGET_WIDTH - 2 <= width <= TARGET_WIDTH + 2
+        assert 550 <= height <= 750
 
 
 # --------------------------------------------------------------------------- drawing
@@ -114,15 +121,71 @@ def test_draw_board_colours_cells() -> None:
     assert close(pixel(4, 4), hex_to_rgb(EMPTY_FILL))
 
 
-def test_last_move_is_marked_with_white_dot() -> None:
+@pytest.mark.parametrize(("player", "edge"), [(RED, RED_EDGE), (BLUE, BLUE_EDGE)])
+@pytest.mark.parametrize("size", [5, 11])
+def test_stones_have_a_neon_border_and_glow(size: int, player: int, edge: str) -> None:
+    game = HexGame(size)
+    state = game.initial_state()
+    if player == BLUE:
+        state = game.play(state, (0, 0))
+    state = game.play(state, (size // 2, size // 2))
+    image = draw_board(state, None, size)
+    geo = geometry(size)
+    x, y = geo.center(size // 2, size // 2)
+    border = image.getpixel((round(x), round(y - geo.radius + 2)))  # Just inside the top vertex.
+    assert close(border, hex_to_rgb(edge), tol=60)
+    # The glow tints the empty cell next to the stone towards the neon colour.
+    nx, ny = geo.center(size // 2, size // 2 + 1)
+    glow = image.getpixel((round(nx - geo.hex_width * 0.38), round(ny)))
+    plain = draw_board(HexGame(size).initial_state(), None, size).getpixel((round(nx - geo.hex_width * 0.38), round(ny)))
+    channel = 0 if player == RED else 2
+    assert glow[channel] > plain[channel] + 8
+
+
+def test_last_move_is_marked_with_a_yellow_ring() -> None:
     game = HexGame(5)
     state = game.play(game.initial_state(), (2, 2))
     geo = geometry(5)
     x, y = geo.center(2, 2)
-    with_marker = draw_board(state, (2, 2), 5).getpixel((round(x), round(y)))
-    without = draw_board(state, None, 5).getpixel((round(x), round(y)))
-    assert close(with_marker, (255, 255, 255))
-    assert close(without, hex_to_rgb(RED_FILL))
+    ring = (round(x + geo.radius * 0.42 - 2), round(y))  # PIL draws the outline inwards.
+    with_marker = draw_board(state, (2, 2), 5)
+    without = draw_board(state, None, 5)
+    assert close(with_marker.getpixel(ring), hex_to_rgb(HIGHLIGHT), tol=60)
+    assert close(without.getpixel(ring), hex_to_rgb(RED_FILL), tol=25)
+    # The centre of the stone stays dark: it is a ring, not a dot.
+    assert close(with_marker.getpixel((round(x), round(y))), hex_to_rgb(RED_FILL))
+
+
+def test_web_version_is_a_small_palette_image_of_the_same_board() -> None:
+    import io
+
+    game = HexGame(7)
+    state = game.play(game.play(game.initial_state(), (3, 3)), (2, 4))
+    rgb = draw_board(state, (2, 4), 7)
+    web = draw_board_for_web(state, (2, 4), 7)
+    assert web.mode == "P" and web.size == rgb.size
+    rgb_png, web_png = io.BytesIO(), io.BytesIO()
+    rgb.save(rgb_png, format="PNG", compress_level=6)
+    web.save(web_png, format="PNG", compress_level=6)
+    assert len(web_png.getvalue()) < len(rgb_png.getvalue()) / 2
+    x, y = geometry(7).center(3, 3)
+    assert close(web.convert("RGB").getpixel((round(x), round(y))), hex_to_rgb(RED_FILL), tol=20)
+
+
+def test_cached_drawings_are_not_shared_with_callers() -> None:
+    """draw_board returns a copy: changing it must not change later drawings."""
+    state = HexGame(5).initial_state()
+    first = draw_board(state, None, 5)
+    first.paste((255, 0, 255), (0, 0, first.width, first.height))
+    second = draw_board(state, None, 5)
+    assert second.getpixel((first.width // 2, first.height // 2)) != (255, 0, 255)
+
+
+def test_each_position_gets_its_own_drawing() -> None:
+    game = HexGame(5)
+    a = game.play(game.initial_state(), (0, 0))
+    b = game.play(game.initial_state(), (4, 4))
+    assert draw_board(a, None, 5).tobytes() != draw_board(b, None, 5).tobytes()
 
 
 def test_draw_board_rejects_mismatched_size() -> None:
