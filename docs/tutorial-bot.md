@@ -1,12 +1,14 @@
 # Tutorial: sube tu primer bot
 
+> 🕹️ **PRESS START** · 1 archivo de Python · 3 niveles · tu bot en la arena
+
 En este tutorial crearás un bot que juega a Hex y lo enviarás a nuestro repositorio con un *pull request* (PR). Cuando lo aceptemos, tu bot aparecerá en la **[web](https://hex-arena-cunef.streamlit.app)** para que cualquiera juegue contra él, y competirá en el **[torneo](https://monianzola.github.io/HEX/)**.
 
 **Solo tienes que crear un archivo de Python.** No hace falta tocar nada del juego.
 
-Hay dos caminos. Elige uno:
+Elige tu **modo de juego**:
 
-| | Camino A: desde el navegador | Camino B: en tu ordenador |
+| | 🅰️ Modo A: desde el navegador | 🅱️ Modo B: en tu ordenador |
 |---|---|---|
 | Qué necesitas | Solo una cuenta de GitHub | Python 3.10+ y Git instalados |
 | Cómo se prueba el bot | Nuestro CI lo prueba solo al abrir el PR | Lo pruebas tú antes, con un comando |
@@ -15,7 +17,7 @@ Hay dos caminos. Elige uno:
 
 ---
 
-## Paso 1: escribe tu bot
+## Nivel 1 · Escribe tu bot
 
 Este es un bot completo que ya funciona. Cópialo y cambia las líneas marcadas con `<-- CAMBIA ESTO`:
 
@@ -66,11 +68,11 @@ En cada turno se llama a `choose_move(observation)`. Tiene que devolver una tupl
 - Responde en menos de `observation.time_limit` segundos.
 - No usa internet, ni archivos, ni librerías externas (solo Python estándar y `hexarena`).
 
-Si tu bot falla, se cuelga o hace una jugada ilegal, **pierde esa partida**, pero no rompe el torneo.
+Si tu bot falla, se cuelga o hace una jugada ilegal, **GAME OVER: pierde esa partida**, pero no rompe el torneo.
 
 ---
 
-## Paso 2 (camino A): súbelo desde el navegador
+## Nivel 2 · Modo A: súbelo desde el navegador
 
 **1. Haz un fork.** Entra en [github.com/monianzola/HEX](https://github.com/monianzola/HEX) y pulsa **Fork** (arriba a la derecha), luego **Create fork**. Ahora tienes tu propia copia en `github.com/TU_USUARIO/HEX`.
 
@@ -98,9 +100,9 @@ Si tu bot falla, se cuelga o hace una jugada ilegal, **pierde esa partida**, per
 
 ---
 
-## Paso 2 (camino B): pruébalo en tu ordenador
+## Nivel 2 · Modo B: pruébalo en tu ordenador
 
-**1. Haz un fork** como en el camino A. Después clónalo e instala el proyecto:
+**1. Haz un fork** como en el modo A. Después clónalo e instala el proyecto:
 
 ```bash
 git clone https://github.com/TU_USUARIO/HEX.git
@@ -164,7 +166,7 @@ En GitHub aparecerá **Compare & pull request**. Púlsalo y crea el PR hacia `mo
 
 ---
 
-## Paso 3: qué pasa después
+## Nivel 3 · Entra en la arena 🏆
 
 1. Revisamos tu código: que se entiende, que no hace nada peligroso y que pasa los tests.
 2. Si hay que cambiar algo, te dejamos un comentario en el PR.
@@ -172,7 +174,7 @@ En GitHub aparecerá **Compare & pull request**. Púlsalo y crea el PR hacia `mo
 
 ---
 
-## Ideas de bots con lo visto en clase
+## Power-ups: ideas de bots con lo visto en clase
 
 Te damos hechas estas funciones en `hexarena.bots.heuristics`:
 
@@ -183,13 +185,13 @@ Te damos hechas estas funciones en `hexarena.bots.heuristics`:
 | `with_stone(board, move, player)` | Copia del tablero con una ficha más (para "imaginar" jugadas) |
 | `center_distance(move, size)` | Distancia de una casilla al centro |
 
-Cuatro estrategias, de más fácil a más difícil:
+Cuatro estrategias, de más fácil a más difícil (nivel de dificultad ★):
 
-**1. Heurística simple.** Jugar la casilla más cercana al centro, o junto a tu última ficha.
+**★ 1. Heurística simple.** Jugar la casilla más cercana al centro, o junto a tu última ficha.
 
-**2. Greedy.** Probar todas las jugadas y quedarse con la de mejor `evaluate`. Es lo que hace la plantilla.
+**★★ 2. Greedy.** Probar todas las jugadas y quedarse con la de mejor `evaluate`. Es lo que hace la plantilla.
 
-**3. Defensa primero.** Si el rival está a 1 ficha de ganar, tapar esa casilla:
+**★★★ 3. Defensa primero.** Si el rival está a 1 ficha de ganar, tapar esa casilla:
 
 ```python
 from hexarena.bots.heuristics import shortest_path_distance, with_stone
@@ -200,7 +202,7 @@ for move in observation.legal_moves:
         return move  # El rival ganaría ahí: lo tapamos.
 ```
 
-**4. Minimax (maximin) a 2 jugadas con poda alfa-beta.** Para cada jugada mía, suponer que el rival responde con su mejor jugada, y quedarme con la jugada cuyo peor caso sea el mejor. Si va lento, limita las jugadas que miras a las 10 o 15 mejores según `evaluate`.
+**★★★★ 4. Minimax (maximin) a 2 jugadas con poda alfa-beta.** Para cada jugada mía, suponer que el rival responde con su mejor jugada, y quedarme con la jugada cuyo peor caso sea el mejor. Si va lento, limita las jugadas que miras a las 10 o 15 mejores según `evaluate`.
 
 Puedes ver bots completos en la carpeta [`src/hexarena/bots/`](https://github.com/monianzola/HEX/tree/main/src/hexarena/bots): `random_bot.py` (el más simple), `shortest_path.py` (greedy) y `alpha_beta.py` (minimax con poda).
 
@@ -218,6 +220,6 @@ Puedes ver bots completos en la carpeta [`src/hexarena/bots/`](https://github.co
 | `test_bot_has_name_and_description` | Falta `name` o `description` | Rellena los dos atributos de la clase |
 | `ModuleNotFoundError: No module named 'numpy'` (u otra) | Usas una librería que no está instalada | Usa solo Python estándar y `hexarena` |
 | El PR dice *"This branch is out-of-date"* | Han entrado otros cambios en `main` | No hagas nada: lo actualizamos nosotros con **Update branch** |
-| `git` o `python` "no se reconoce" | No están instalados o falta reiniciar la terminal | Instálalos y vuelve a abrir la terminal, o usa el camino A |
+| `git` o `python` "no se reconoce" | No están instalados o falta reiniciar la terminal | Instálalos y vuelve a abrir la terminal, o usa el modo A |
 
 ¿Algo no funciona? Abre un [issue](https://github.com/monianzola/HEX/issues) o pregúntanos en el PR.

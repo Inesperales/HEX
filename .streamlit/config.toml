@@ -1,0 +1,23 @@
+# Arcade / neon theme for the Hex Arena web app.
+# Everything the theme cannot express (hard shadows, thick borders, scanlines,
+# title) is added as CSS by app/theme.py.
+
+[theme]
+base = "dark"
+primaryColor = "#FFE14D"
+backgroundColor = "#140B2E"
+secondaryBackgroundColor = "#1D1142"
+textColor = "#F3EEFF"
+linkColor = "#FFE14D"
+borderColor = "#6B4FD1"
+showWidgetBorder = true
+baseRadius = "none"
+buttonRadius = "none"
+baseFontSize = 19
+font = "VT323:https://fonts.googleapis.com/css2?family=VT323&display=swap, monospace"
+headingFont = "Press Start 2P:https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap, monospace"
+
+[theme.sidebar]
+backgroundColor = "#1D1142"
+secondaryBackgroundColor = "#2B1B52"
+borderColor = "#6B4FD1"

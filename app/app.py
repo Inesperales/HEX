@@ -23,8 +23,9 @@ APP_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(APP_DIR.parent / "src"))
 sys.path.insert(0, str(APP_DIR))  # So ``board_render`` and ``game_controller`` import.
 
-from board_render import draw_board, geometry, pixel_to_cell  # noqa: E402
+from board_render import draw_board_for_web, geometry, pixel_to_cell  # noqa: E402
 from game_controller import COLOUR_NAMES, HUMAN, Match  # noqa: E402
+from theme import BOARD_PANEL_KEY, apply_theme  # noqa: E402
 
 from hexarena.bots import available_bots, get_bot  # noqa: E402
 from hexarena.game import BLUE, RED  # noqa: E402
@@ -33,8 +34,7 @@ DEFAULT_SIZE = 7
 DEFAULT_BOT = "alpha-beta"
 THINK_TIMES = [0.1, 0.25, 0.5, 1.0]
 DEFAULT_THINK_TIME = 0.25
-AUTOPLAY_DELAY = 0.4
-"""Pause between moves when watching two bots, so the game can be followed."""
+AUTOPLAY_DELAY = 0.4  # Pause between moves when watching two bots, so the game can be followed.
 
 MODE_HUMAN = "Humano contra bot"
 MODE_BOTS = "Bot contra bot"
@@ -212,15 +212,16 @@ def game_area() -> None:
     handle_click(ss.get(board_key()))
 
     render_status(match)
-    image = draw_board(match.state, match.last_move, match.size)
-    # Compressed PNG: ~40 KB per move instead of ~1 MB.
-    streamlit_image_coordinates(
-        image,
-        key=board_key(),
-        width="content",
-        cursor="pointer" if match.is_human_turn() else "default",
-        png_compression_level=6,
-    )
+    # 256-colour PNG: ~50 KB per move. The board fills the panel (at most
+    # 820 px wide, see theme.py) and shrinks on narrow screens.
+    with st.container(key=BOARD_PANEL_KEY):
+        streamlit_image_coordinates(
+            draw_board_for_web(match.state, match.last_move, match.size),
+            key=board_key(),
+            width="stretch",
+            cursor="pointer" if match.is_human_turn() else "default",
+            png_compression_level=6,
+        )
     render_controls(match)
     render_history(match)
 
@@ -263,9 +264,10 @@ def init_state(bot_names: list[str]) -> None:
 
 def main() -> None:
     st.set_page_config(page_title="Hex Arena", page_icon="⬢", layout="wide")
+    apply_theme()
     bot_names = available_bots()
     init_state(bot_names)
-    st.title("⬢ Hex Arena")
+    st.title("HEX ARENA", anchor=False)
     st.caption(
         "Juega a Hex contra los bots del proyecto **hexarena**, o mira cómo juegan entre ellos. "
         "[Cómo crear tu propio bot](https://hex-arena-cunef.readthedocs.io/es/latest/tutorial-bot/)"
