@@ -9,6 +9,8 @@ from pathlib import Path
 from hexarena.tournament.runner import WIN, TournamentResult
 
 REPO_URL = "https://github.com/monianzola/HEX"
+WEB_URL = "https://hex-arena-cunef.streamlit.app"
+DOCS_URL = "https://hex-arena-cunef.readthedocs.io/es/latest/"
 
 REASON_LABELS = {
     WIN: "conexión",
@@ -20,37 +22,59 @@ REASON_LABELS = {
 
 _CSS = """
 :root {
-  --bg: #f5f3ee; --card: #ffffff; --text: #1d1d1f; --muted: #6b6b70;
-  --line: #e2dfd8; --red: #d62839; --blue: #1f6fd1; --gold: #c99700;
-}
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #16161a; --card: #1f1f24; --text: #ececf1; --muted: #a0a0aa; --line: #33333b; }
+  --bg: #140B2E; --panel: #1D1142; --panel-2: #2B1B52; --border: #6B4FD1;
+  --text: #F3EEFF; --muted: #B9A8F0; --yellow: #FFE14D; --red: #FF4D4D; --blue: #4DA3FF;
+  --pixel: "Press Start 2P", monospace; --terminal: "VT323", monospace;
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--text);
-  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-main { max-width: 960px; margin: 0 auto; padding: 32px 16px 48px; }
-h1 { margin: 0 0 4px; font-size: 28px; }
-h1 span { color: var(--red); }
-h2 { margin: 32px 0 12px; font-size: 19px; }
-.meta { color: var(--muted); margin: 0 0 24px; }
-.meta a { color: inherit; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; }
+body {
+  margin: 0; color: var(--text); background-color: var(--bg);
+  background-image: repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0px,
+    rgba(255,255,255,.03) 1px, transparent 1px, transparent 4px);
+  font: 22px/1.25 var(--terminal);
+}
+main { max-width: 980px; margin: 0 auto; padding: 36px 16px 56px; }
+a { color: var(--yellow); }
+.kicker { margin: 0 0 10px; font: 12px/1.6 var(--pixel); color: var(--muted); letter-spacing: 1px; }
+h1 {
+  margin: 0 0 14px; font: clamp(26px, 6vw, 44px)/1.2 var(--pixel); color: var(--yellow);
+  text-shadow: 4px 4px 0 var(--red); letter-spacing: 2px;
+}
+h2 { margin: 36px 0 12px; font: 14px/1.5 var(--pixel); color: var(--yellow); }
+.meta { color: var(--muted); margin: 0 0 18px; }
+.actions { display: flex; flex-wrap: wrap; gap: 14px; margin: 0 0 22px; }
+.button {
+  display: inline-block; padding: 10px 16px; font: 12px/1.4 var(--pixel); text-decoration: none;
+  border: 4px solid #000; background: var(--yellow); color: var(--bg); box-shadow: 4px 4px 0 var(--red);
+}
+.button.secondary { background: transparent; color: var(--text); border: 3px solid var(--border); box-shadow: none; }
+.button:focus-visible { outline: 3px solid var(--text); outline-offset: 3px; }
+.card {
+  background: var(--panel); border: 4px solid var(--border); box-shadow: 6px 6px 0 #000; overflow-x: auto;
+}
 table { width: 100%; border-collapse: collapse; }
-th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
-tr:last-child td { border-bottom: none; }
-th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+th, td { padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--panel-2); white-space: nowrap; }
+tr:last-child td, tr:last-child th { border-bottom: none; }
+thead th { font: 10px/1.6 var(--pixel); color: var(--muted); background: var(--panel-2); }
+tbody th { font-weight: normal; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-.rank { font-weight: 700; }
-.first .rank { color: var(--gold); }
-.bot small { display: block; color: var(--muted); }
-.bar { display: inline-block; height: 6px; border-radius: 3px; background: var(--blue); vertical-align: middle; margin-left: 8px; }
-.matrix td.self { color: var(--muted); text-align: center; }
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip { background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; }
-.empty { padding: 16px; color: var(--muted); }
-footer { margin-top: 40px; color: var(--muted); font-size: 13px; }
-footer a { color: inherit; }
+.rank { font: 14px/1.4 var(--pixel); color: var(--muted); }
+.first td { background: rgba(255, 225, 77, .07); }
+.first .rank { color: var(--yellow); }
+.first .rank::after { content: " ★"; }
+.bot strong { font-weight: normal; color: var(--text); }
+.bot small { display: block; color: var(--muted); font-size: 18px; }
+.elo { color: var(--yellow); }
+.bar {
+  display: inline-block; height: 12px; background: var(--yellow); vertical-align: middle;
+  margin-left: 10px; border: 2px solid #000;
+}
+.matrix td.self { color: var(--border); text-align: center; }
+.matrix td.ahead { color: var(--yellow); }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { background: var(--panel); border: 3px solid var(--border); padding: 4px 12px; font-size: 20px; }
+.empty { padding: 16px; margin: 0; color: var(--muted); }
+footer { margin-top: 44px; color: var(--muted); font-size: 20px; }
 """
 
 
@@ -77,7 +101,7 @@ def to_html(result: TournamentResult) -> str:
         rows.append(
             f"<tr{cls}><td class=\"rank\">{rank}</td>"
             f'<td class="bot"><strong>{escape(s.name)}</strong>{author}</td>'
-            f'<td class="num">{s.elo:.0f}</td>'
+            f'<td class="num elo">{s.elo:.0f}</td>'
             f'<td class="num">{s.wins}</td><td class="num">{s.losses}</td>'
             f'<td class="num">{s.win_rate:.0%}<span class="bar" style="width:{s.win_rate * 60:.0f}px"></span></td>'
             f'<td class="num">{s.forfeits}</td></tr>'
@@ -93,7 +117,8 @@ def to_html(result: TournamentResult) -> str:
                 cells.append('<td class="self">—</td>')
             else:
                 won, lost = result.head_to_head[a][b], result.head_to_head[b][a]
-                cells.append(f'<td class="num">{won}–{lost}</td>')
+                ahead = ' ahead' if won > lost else ''
+                cells.append(f'<td class="num{ahead}">{won}–{lost}</td>')
         matrix_rows.append(f"<tr><th>{escape(names[a])}</th>{''.join(cells)}</tr>")
 
     incidents = [g for g in result.games if g.reason != WIN]
@@ -117,13 +142,21 @@ def to_html(result: TournamentResult) -> str:
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Clasificación hex-arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
 <style>{_CSS}</style>
 </head>
 <body>
 <main>
-  <h1><span>⬢</span> Clasificación hex-arena</h1>
+  <p class="kicker">CLASIFICACIÓN DEL TORNEO</p>
+  <h1>HEX ARENA</h1>
   <p class="meta">Actualizada el {escape(result.generated_at)} · commit {commit_html} ·
     {len(result.games)} partidas en {result.duration_seconds:.0f} s</p>
+  <nav class="actions">
+    <a class="button" href="{WEB_URL}">► JUGAR</a>
+    <a class="button secondary" href="{DOCS_URL}tutorial-bot/">SUBE TU BOT</a>
+  </nav>
 
   <div class="chips">
     <span class="chip">Round-robin</span>
@@ -155,7 +188,7 @@ def to_html(result: TournamentResult) -> str:
   {incidents_html}
 
   <footer>Generado automáticamente por <a href="{REPO_URL}">hex-arena</a> ·
-    <a href="results.json">resultados en JSON</a></footer>
+    <a href="results.json">resultados en JSON</a> · <a href="{DOCS_URL}torneo/">cómo funciona el torneo</a></footer>
 </main>
 </body>
 </html>
