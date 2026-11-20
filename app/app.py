@@ -26,6 +26,7 @@ sys.path.insert(0, str(APP_DIR))  # So ``board_render`` and ``game_controller`` 
 from board_render import draw_board_for_web, geometry, pixel_to_cell  # noqa: E402
 from game_controller import COLOUR_NAMES, HUMAN, Match  # noqa: E402
 from theme import BOARD_PANEL_KEY, apply_theme  # noqa: E402
+from welcome import show_welcome_once, welcome_is_open  # noqa: E402
 
 from hexarena.bots import available_bots, get_bot  # noqa: E402
 from hexarena.game import BLUE, RED  # noqa: E402
@@ -209,6 +210,9 @@ def game_area() -> None:
     part of the page, not the sidebar.
     """
     match: Match = ss.match
+    # While the welcome window is open, everything is drawn as usual but no
+    # bot move (nor bot-vs-bot loop, nor its pause) is started.
+    paused = welcome_is_open()
     handle_click(ss.get(board_key()))
 
     render_status(match)
@@ -227,7 +231,7 @@ def game_area() -> None:
 
     # The bot moves AFTER the board is drawn, so the human's stone appears
     # immediately and a spinner shows while the bot thinks.
-    if match.is_bot_turn() and (match.has_human or ss.autoplay):
+    if not paused and match.is_bot_turn() and (match.has_human or ss.autoplay):
         with st.spinner(f"🤖 {match.player_name(match.to_move)} está pensando…"):
             match.play_bot()
             if not match.has_human:
@@ -273,6 +277,7 @@ def main() -> None:
         "[Cómo crear tu propio bot](https://hex-arena-cunef.readthedocs.io/es/latest/tutorial-bot/)"
     )
     render_sidebar(bot_names)
+    show_welcome_once()
     game_area()
 
 
