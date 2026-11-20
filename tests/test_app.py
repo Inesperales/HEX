@@ -26,9 +26,29 @@ APP_PATH = str(Path(__file__).resolve().parents[1] / "app" / "app.py")
 _click_counter = 0
 
 
-def start_app(**settings: object) -> AppTest:
-    """Open the app; ``settings`` are sidebar values applied before the first run."""
+@pytest.fixture(autouse=True)
+def restore_main_module():
+    """AppTest leaves ``sys.modules["__main__"]`` pointing at app.py.
+
+    On Windows, multiprocessing's "spawn" re-imports ``__main__`` in every
+    child process, so later tests that start processes (the tournament)
+    would run the whole web app inside each bot process. Put it back.
+    """
+    main = sys.modules.get("__main__")
+    yield
+    if main is not None:
+        sys.modules["__main__"] = main
+
+
+def start_app(welcome: bool = False, **settings: object) -> AppTest:
+    """Open the app; ``settings`` are sidebar values applied before the first run.
+
+    The welcome window is skipped unless ``welcome=True`` (as if the user had
+    already pressed JUGAR earlier in the session).
+    """
     at = AppTest.from_file(APP_PATH, default_timeout=60)
+    if not welcome:
+        at.session_state["welcome_shown"] = True
     for key, value in settings.items():
         at.session_state[key] = value
     at.run()
@@ -205,3 +225,47 @@ def test_app_ignores_an_old_installed_copy_of_hexarena(tmp_path: Path) -> None:
     module_file, bots = out.stdout.strip().splitlines()[-2:]
     assert Path(module_file).resolve().is_relative_to((repo / "src").resolve())
     assert "bridges" in bots.split(",")
+
+
+# --------------------------------------------------------------------------- welcome window
+
+
+def press_play(at: AppTest) -> AppTest:
+    at.button(key="welcome-play").click().run()
+    assert not at.exception
+    return at
+
+
+def test_welcome_window_opens_once_on_first_load() -> None:
+    at = start_app(welcome=True)
+    assert at.session_state["welcome_shown"] is True
+    assert at.session_state["welcome_open"] is True
+    assert any(b.key == "welcome-play" for b in at.button)
+
+
+def test_play_closes_the_window_and_it_never_comes_back() -> None:
+    at = press_play(start_app(welcome=True, think_time=0.1))
+    assert at.session_state["welcome_open"] is False
+    assert not any(b.key == "welcome-play" for b in at.button)
+    at = click(at, (2, 2))  # Playing does not reopen it...
+    button(at, "Nueva partida").click().run()  # ...nor does a new game.
+    at.run()
+    assert not any(b.key == "welcome-play" for b in at.button)
+
+
+def test_no_bot_moves_while_the_window_is_open_when_the_bot_starts() -> None:
+    at = start_app(welcome=True, human_colour=BLUE, think_time=0.1)
+    at.run()  # Extra reruns while open: still nothing.
+    assert match(at).moves == []
+    at = press_play(at)
+    assert len(match(at).moves) == 1  # The bot (Red) opens only after JUGAR.
+
+
+def test_no_bot_vs_bot_loop_while_the_window_is_open() -> None:
+    import time
+
+    start = time.perf_counter()
+    at = start_app(welcome=True, mode="Bot contra bot", size=5, think_time=0.1, autoplay=True)
+    at.run()
+    assert match(at).moves == []
+    assert time.perf_counter() - start < 10  # No bot thinking nor autoplay pauses.
