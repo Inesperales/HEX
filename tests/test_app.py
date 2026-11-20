@@ -26,6 +26,20 @@ APP_PATH = str(Path(__file__).resolve().parents[1] / "app" / "app.py")
 _click_counter = 0
 
 
+@pytest.fixture(autouse=True)
+def restore_main_module():
+    """AppTest leaves ``sys.modules["__main__"]`` pointing at app.py.
+
+    On Windows, multiprocessing's "spawn" re-imports ``__main__`` in every
+    child process, so later tests that start processes (the tournament)
+    would run the whole web app inside each bot process. Put it back.
+    """
+    main = sys.modules.get("__main__")
+    yield
+    if main is not None:
+        sys.modules["__main__"] = main
+
+
 def start_app(welcome: bool = False, **settings: object) -> AppTest:
     """Open the app; ``settings`` are sidebar values applied before the first run.
 
