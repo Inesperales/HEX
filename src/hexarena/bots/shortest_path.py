@@ -27,7 +27,7 @@ class ShortestPathBot(Bot):
 
     name = "ShortestPathBot"
     author = "hex-arena team"
-    description = "Greedy: maximises the opponent's shortest path minus its own."
+    description = "Greedy: juega la casilla que más alarga el camino del rival y más acorta el suyo."
 
     def choose_move(self, observation: Observation) -> Move:
         """Evaluate every legal move and return the best one."""

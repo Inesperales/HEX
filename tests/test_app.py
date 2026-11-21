@@ -269,3 +269,33 @@ def test_no_bot_vs_bot_loop_while_the_window_is_open() -> None:
     at.run()
     assert match(at).moves == []
     assert time.perf_counter() - start < 10  # No bot thinking nor autoplay pauses.
+
+
+def test_bot_files_added_after_start_appear_on_the_next_run() -> None:
+    """Streamlit Cloud pulls new commits without restarting the server: a bot
+    merged later must show up on the next run, without rebooting the app."""
+    from hexarena.bots import unregister_bot
+
+    bots_dir = Path(__file__).resolve().parents[1] / "src" / "hexarena" / "bots"
+    new_file = bots_dir / "zz_late_test_bot.py"
+    at = start_app()
+    assert "zz-late" not in at.selectbox(key="rival").options
+    try:
+        new_file.write_text(
+            "from hexarena.bots import Bot, register_bot\n\n\n"
+            '@register_bot("zz-late")\n'
+            "class LateBot(Bot):\n"
+            '    description = "Added while the app was running."\n\n'
+            "    def choose_move(self, observation):\n"
+            "        return observation.legal_moves[0]\n",
+            encoding="utf-8",
+        )
+        at.run()
+        assert not at.exception
+        assert "zz-late" in at.selectbox(key="rival").options
+    finally:
+        new_file.unlink(missing_ok=True)
+        unregister_bot("zz-late")
+        import sys as _sys
+
+        _sys.modules.pop("hexarena.bots.zz_late_test_bot", None)

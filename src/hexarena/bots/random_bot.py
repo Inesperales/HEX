@@ -34,7 +34,7 @@ class RandomBot(Bot):
 
     name = "RandomBot"
     author = "hex-arena team"
-    description = "Plays a uniformly random legal move."
+    description = "Juega una casilla libre al azar. Es la referencia mínima: cualquier bot debería ganarle."
 
     def __init__(self, seed: int | None = None) -> None:
         # Each bot has its own random generator, so it never interferes
