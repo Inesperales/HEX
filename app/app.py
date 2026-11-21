@@ -28,7 +28,7 @@ from game_controller import COLOUR_NAMES, HUMAN, Match  # noqa: E402
 from theme import BOARD_PANEL_KEY, apply_theme  # noqa: E402
 from welcome import show_welcome_once, welcome_is_open  # noqa: E402
 
-from hexarena.bots import available_bots, get_bot  # noqa: E402
+from hexarena.bots import discover_bots, get_bot  # noqa: E402
 from hexarena.game import BLUE, RED  # noqa: E402
 
 DEFAULT_SIZE = 7
@@ -269,7 +269,11 @@ def init_state(bot_names: list[str]) -> None:
 def main() -> None:
     st.set_page_config(page_title="Hex Arena", page_icon="⬢", layout="wide")
     apply_theme()
-    bot_names = available_bots()
+    # Look for bot files on every run, not only when the server starts:
+    # Streamlit Cloud pulls new commits without restarting the process, so a
+    # bot merged later would otherwise not appear until a manual reboot.
+    # Already imported modules are not imported again, so this is cheap.
+    bot_names = sorted(discover_bots())
     init_state(bot_names)
     st.title("HEX ARENA", anchor=False)
     st.caption(
