@@ -45,6 +45,20 @@ Sigue el [tutorial](tutorial-bot.md). Un bot nuevo debe:
 - no acceder a la red ni a archivos, ni ejecutar código peligroso;
 - ser razonablemente mejor que `RandomBot`.
 
+## Cómo revisamos un PR de bot
+
+Antes de aprobar el PR de un bot nuevo, quien revisa comprueba estos cinco puntos:
+
+| Punto | Qué miramos |
+|---|---|
+| **API** | Hereda de `Bot`, está registrado con un nombre único, se crea sin argumentos, devuelve siempre una jugada de `observation.legal_moves` y no modifica la observación |
+| **Seguridad** | Solo importa la librería estándar y `hexarena`; no usa la red, archivos ni procesos; no tiene variables globales compartidas. Leemos el código **entero** antes de ejecutarlo |
+| **Alcance** | Solo añade su archivo en `src/hexarena/bots/`: no toca el juego, otros bots ni los tests |
+| **Tests y tiempos** | El CI está en verde (incluye los tests de contrato, que examinan solos cada bot y su tiempo de respuesta) |
+| **Calidad** | El código y la descripción se entienden, la estrategia está explicada y el bot gana con claridad a `RandomBot` |
+
+Los fallos de los tres primeros puntos se piden como **cambios** (*Request changes*); las mejoras de estilo o rendimiento, como **sugerencias**. Si todo está bien, se **aprueba** (*Approve*) y se fusiona. Así se aceptó **Portero**, el primer bot enviado por otro equipo ([PR #22](https://github.com/monianzola/HEX/pull/22)).
+
 ## Documentación
 
 ```bash

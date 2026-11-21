@@ -29,6 +29,8 @@ extra_css:
 nav:
   - Inicio: index.md
   - Reglas de Hex: reglas.md
+  - La web: web.md
+  - Nuestros bots: bots.md
   - Instalación: instalacion.md
   - "Tutorial: sube tu primer bot": tutorial-bot.md
   - Referencia del API:
