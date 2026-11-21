@@ -11,7 +11,10 @@
 
 | Quiero… | Ve a |
 |---|---|
+| **Jugar ahora, sin instalar nada** | **[▶ hex-arena-cunef.streamlit.app](https://hex-arena-cunef.streamlit.app)** |
 | Entender cómo se juega | [Reglas de Hex](reglas.md) |
+| Saber qué se puede hacer en la web | [La web](web.md) |
+| Conocer los bots y cómo deciden | [Nuestros bots](bots.md) |
 | Instalar la librería | [Instalación](instalacion.md) |
 | Programar mi propio bot | [Tutorial: sube tu primer bot](tutorial-bot.md) |
 | Consultar clases y funciones | [Referencia del API](api/game.md) |
